@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:5000";
+const API_URL = "https://NaveenS165.pythonanywhere.com/Password_breach_prevention"; 
 
 document.getElementById("password").addEventListener("input", analyzePassword);
 
