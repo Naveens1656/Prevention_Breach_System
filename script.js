@@ -1,4 +1,4 @@
-const API_URL = "https://NaveenS165.pythonanywhere.com/Password_breach_prevention"; 
+const API_URL = "https://prevention-breach-system-backend.onrender.com"; 
 
 document.getElementById("password").addEventListener("input", analyzePassword);
 
