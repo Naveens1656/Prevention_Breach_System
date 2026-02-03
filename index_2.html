@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Password Strength Analyzer</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body class="dark">
+
+    <!-- 🎥 Background Video -->
+    <video autoplay muted loop playsinline id="bg-video">
+        <source src="matrix_background2.mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+    </video>
+
+    <div class="container">
+        <div class="card">
+            <h1>AI Password Strength Analyzer</h1>
+
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Enter your password" />
+                <button onclick="togglePassword()">👁</button>
+            </div>
+
+            <div class="buttons">
+                <button onclick="generatePassword()">Generate Strong Password</button>
+                <button onclick="generatePassphrase()">Generate AI Passphrase</button>
+                <button onclick="toggleTheme()">Toggle Theme</button>
+                <button onclick="showHistory()">History</button>
+            </div>
+
+            <!-- 🔥 NEW CYBER STRENGTH METER -->
+            <div class="strength-wrapper">
+                <div id="strengthBar" class="strength-bar"></div>
+                <div id="strengthIcon" class="strength-icon"></div>
+            </div>
+
+            <h2 id="scoreText"></h2>
+            <p id="crackTime"></p>
+            <p id="breachResult"></p>
+
+            <div class="crack-box">
+                <p id="crackResult"></p>
+            </div>
+
+            <ul id="feedbackList"></ul>
+
+            <div id="historyBox"></div>
+        </div>
+        <div class="radar-box">
+            <h3>Password Breakdown</h3>
+        <canvas id="radarChart" width="400" height="400"></canvas>
+
+        </div>
+
+        <div class="crack-box">
+            <h3>Crack Simulation</h3>
+            <div id="terminal"></div>
+            </div>
+
+
+            
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Strength Tester | Bitwarden</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #00D9FF;
+            --dark-blue: #0099CC;
+            --light-blue: #1A2332;
+            --accent-green: #00FFA3;
+            --accent-red: #FF3366;
+            --accent-purple: #B84FFF;
+            --accent-yellow: #FFD93D;
+            --text-dark: #FFFFFF;
+            --text-gray: #B8C5D6;
+            --text-light: #8A9BB0;
+            --bg-white: #0A0E17;
+            --bg-gray: #141925;
+            --bg-card: #1A2332;
+            --border-color: #2A3547;
+            --shadow-sm: 0 1px 3px rgba(0, 217, 255, 0.1);
+            --shadow-md: 0 4px 12px rgba(0, 217, 255, 0.15);
+            --shadow-lg: 0 10px 30px rgba(0, 217, 255, 0.2);
+            --neon-glow: 0 0 20px rgba(0, 217, 255, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Sora', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            background: var(--bg-white);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(10, 14, 23, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bg-white);
+            font-weight: 700;
+            box-shadow: var(--neon-glow);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-gray);
+            text-decoration: none;
+            font-weight: 400;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-blue);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.65rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            color: var(--bg-white);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--dark-blue), var(--primary-blue));
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.6);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 217, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+        }
+
+        .btn-text {
+            color: var(--text-gray);
+            background: transparent;
+        }
+
+        .btn-text:hover {
+            color: var(--primary-blue);
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 6rem 2rem 4rem;
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+            position: relative;
+            min-height: calc(100vh - 80px);
+        }
+
+        .hero-content {
+            flex: 1;
+            text-align: left;
+        }
+
+        .hero-image {
+            flex: 0 0 450px;
+            position: relative;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 20px;
+            filter: drop-shadow(0 0 40px rgba(0, 217, 255, 0.6)) 
+                    drop-shadow(0 0 80px rgba(184, 79, 255, 0.4));
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .hero-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(0, 217, 255, 0.3) 0%, transparent 70%);
+            filter: blur(60px);
+            z-index: -1;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.5;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-green), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-content p {
+            font-size: 1.25rem;
+            color: var(--text-gray);
+            max-width: 600px;
+            margin: 0 0 2.5rem;
+            line-height: 1.7;
+        }
+
+        .faq-section h2,
+        .practices-section h2 {
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .table-header h3 {
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-gray);
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+        }
+
+        /* Password Tester Section */
+        .tester-section {
+            max-width: 900px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+
+        .tester-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        .tester-card h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .password-input-wrapper {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 1.25rem 1.5rem;
+            font-size: 1.1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.3s ease;
+            background: var(--bg-gray);
+            color: var(--text-dark);
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            background: var(--bg-card);
+            box-shadow: 0 0 0 4px rgba(0, 217, 255, 0.2), var(--neon-glow);
+        }
+
+        .toggle-visibility {
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-light);
+            font-size: 1.2rem;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .result-item {
+            padding: 1.5rem;
+            background: var(--bg-gray);
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .result-item:hover {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
+        }
+
+        .result-label {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .strength-indicator {
+            margin-top: 1rem;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .strength-bar {
+            height: 100%;
+            transition: all 0.5s ease;
+            border-radius: 4px;
+        }
+
+        .strength-weak { 
+            background: linear-gradient(90deg, var(--accent-red), #FF6B9D);
+            width: 25%;
+            box-shadow: 0 0 10px var(--accent-red);
+        }
+
+        .strength-fair { 
+            background: linear-gradient(90deg, var(--accent-yellow), #FFB93D);
+            width: 50%;
+            box-shadow: 0 0 10px var(--accent-yellow);
+        }
+
+        .strength-good { 
+            background: linear-gradient(90deg, #00CC88, var(--accent-green));
+            width: 75%;
+            box-shadow: 0 0 10px var(--accent-green);
+        }
+
+        .strength-strong { 
+            background: linear-gradient(90deg, var(--primary-blue), var(--accent-purple));
+            width: 100%;
+            box-shadow: 0 0 15px var(--primary-blue);
+        }
+
+        /* Strength Table */
+        .table-section {
+            max-width: 1200px;
+            margin: 6rem auto;
+            padding: 0 2rem;
+        }
+
+        .strength-table {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .table-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .toggle-passphrases {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-blue);
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+            text-decoration: none;
+        }
+
+        .toggle-passphrases:hover {
+            text-decoration: underline;
+        }
+
+        .password-row {
+            position: relative;
+            margin-bottom: 1rem;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            min-height: 60px;
+        }
+
+        .password-bar-background {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            transition: width 0.5s ease;
+            opacity: 0.2;
+        }
+
+        .bar-strong-bg { 
+            background: linear-gradient(90deg, var(--primary-blue), var(--accent-purple));
+            width: 100%; 
+        }
+        .bar-good-bg { 
+            background: linear-gradient(90deg, #00CC88, var(--accent-green));
+            width: 75%; 
+        }
+        .bar-fair-bg { 
+            background: linear-gradient(90deg, var(--accent-yellow), #FFB93D);
+            width: 50%; 
+        }
+        .bar-weak-bg { 
+            background: linear-gradient(90deg, #FF9933, var(--accent-yellow));
+            width: 40%; 
+        }
+        .bar-very-weak-bg { 
+            background: linear-gradient(90deg, var(--accent-red), #FF6B9D);
+            width: 25%; 
+        }
+
+        .password-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 1rem 1.5rem;
+        }
+
+        .password-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .strength-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.25rem;
+        }
+
+        .strength-badge {
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--bg-white);
+            text-align: center;
+            min-width: 140px;
+        }
+
+        .badge-strong {
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+        }
+
+        .badge-good {
+            background: linear-gradient(135deg, #00CC88, var(--accent-green));
+            box-shadow: 0 0 20px rgba(0, 255, 163, 0.5);
+        }
+
+        .badge-fair {
+            background: linear-gradient(135deg, var(--accent-yellow), #FFB93D);
+            box-shadow: 0 0 20px rgba(255, 217, 61, 0.5);
+        }
+
+        .badge-weak {
+            background: linear-gradient(135deg, #FF9933, var(--accent-yellow));
+            box-shadow: 0 0 20px rgba(255, 153, 51, 0.5);
+        }
+
+        .badge-very-weak {
+            background: linear-gradient(135deg, var(--accent-red), #FF6B9D);
+            box-shadow: 0 0 20px rgba(255, 51, 102, 0.5);
+        }
+
+        .crack-time-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .crack-time {
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            max-width: 900px;
+            margin: 6rem auto;
+            padding: 0 2rem;
+        }
+
+        .faq-section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            text-align: center;
+            color: var(--text-dark);
+        }
+
+        .faq-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.2);
+            border-color: var(--primary-blue);
+        }
+
+        .faq-question {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-dark);
+            user-select: none;
+        }
+
+        .faq-icon {
+            transition: transform 0.3s ease;
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+        }
+
+        .faq-answer-content {
+            padding: 0 2rem 1.5rem;
+            color: var(--text-gray);
+            line-height: 1.8;
+        }
+
+        /* Best Practices Section */
+        .practices-section {
+            background: var(--bg-gray);
+            padding: 6rem 2rem;
+            margin-top: 6rem;
+        }
+
+        .practices-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .practices-section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+            color: var(--text-dark);
+        }
+
+        .practices-subtitle {
+            text-align: center;
+            color: var(--text-gray);
+            margin-bottom: 4rem;
+            font-size: 1.1rem;
+        }
+
+        .practices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .practice-card {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .practice-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0 25px rgba(0, 217, 255, 0.3);
+            border-color: var(--primary-blue);
+        }
+
+        .practice-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .practice-icon.do {
+            background: linear-gradient(135deg, rgba(0, 255, 163, 0.2), rgba(0, 204, 136, 0.2));
+            border: 2px solid var(--accent-green);
+            box-shadow: 0 0 15px rgba(0, 255, 163, 0.3);
+        }
+
+        .practice-icon.dont {
+            background: linear-gradient(135deg, rgba(255, 51, 102, 0.2), rgba(255, 107, 157, 0.2));
+            border: 2px solid var(--accent-red);
+            box-shadow: 0 0 15px rgba(255, 51, 102, 0.3);
+        }
+
+        .practice-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .practice-card p {
+            color: var(--text-gray);
+            line-height: 1.7;
+        }
+
+        .practice-list {
+            margin-top: 1rem;
+            list-style: none;
+        }
+
+        .practice-list li {
+            padding: 0.5rem 0;
+            color: var(--text-gray);
+            display: flex;
+            align-items: start;
+            gap: 0.75rem;
+        }
+
+        .practice-list li::before {
+            content: "✓";
+            color: var(--accent-green);
+            font-weight: 700;
+            flex-shrink: 0;
+            text-shadow: 0 0 5px var(--accent-green);
+        }
+
+        .dont-list li::before {
+            content: "✕";
+            color: var(--accent-red);
+            text-shadow: 0 0 5px var(--accent-red);
+        }
+
+        /* Footer */
+        footer {
+            background: #050810;
+            color: var(--text-gray);
+            padding: 4rem 2rem 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-column h4 {
+            color: var(--text-dark);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: var(--text-gray);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-blue);
+            text-shadow: 0 0 5px rgba(0, 217, 255, 0.5);
+        }
+
+        .footer-bottom {
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0, 217, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .social-link:hover {
+            background: var(--primary-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
+            border-color: var(--primary-blue);
+        }
+
+        .language-selector {
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-dark);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .language-selector:hover {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                flex-direction: column-reverse;
+                padding: 4rem 2rem 3rem;
+            }
+
+            .hero-image {
+                flex: 0 0 auto;
+                width: 100%;
+                max-width: 350px;
+            }
+
+            .hero-content {
+                text-align: center;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-content p {
+                font-size: 1.1rem;
+                max-width: 100%;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .password-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .strength-info {
+                align-items: flex-start;
+                width: 100%;
+            }
+
+            .strength-badge {
+                width: 100%;
+            }
+
+            .password-text {
+                font-size: 0.9rem;
+            }
+
+            .practices-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .scroll-down {
+                bottom: 1rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero, .tester-card, .practice-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .tester-card {
+            animation-delay: 0.1s;
+        }
+
+        .practice-card:nth-child(1) { animation-delay: 0.1s; }
+        .practice-card:nth-child(2) { animation-delay: 0.2s; }
+        .practice-card:nth-child(3) { animation-delay: 0.3s; }
+        .practice-card:nth-child(4) { animation-delay: 0.4s; }
+
+        #vtu-logo{
+            height: 100px;
+        }
+
+        /* Scroll Down Arrow */
+        .scroll-down {
+            position: fixed;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            animation: bounce 2s infinite;
+            z-index: 100;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .scroll-down.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .scroll-down span {
+            color: var(--primary-blue);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            text-shadow: 0 0 10px rgba(0, 217, 255, 0.8);
+        }
+
+        .scroll-arrow {
+            width: 30px;
+            height: 30px;
+            border-left: 3px solid var(--primary-blue);
+            border-bottom: 3px solid var(--primary-blue);
+            transform: rotate(-45deg);
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.8);
+            animation: arrowPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-15px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-8px);
+            }
+        }
+
+        @keyframes arrowPulse {
+            0%, 100% {
+                box-shadow: 0 0 15px rgba(0, 217, 255, 0.8);
+            }
+            50% {
+                box-shadow: 0 0 25px rgba(0, 217, 255, 1);
+            }
+        }
+
+        /* Section Scroll Indicators */
+        .section-scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            animation: bounce 2s infinite;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .section-scroll-indicator.visible {
+            opacity: 1;
+        }
+
+        .section-scroll-indicator span {
+            color: var(--text-gray);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+        }
+
+        .section-scroll-arrow {
+            width: 25px;
+            height: 25px;
+            border-left: 2px solid var(--primary-blue);
+            border-bottom: 2px solid var(--primary-blue);
+            transform: rotate(-45deg);
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+        }
+
+        /* Add position relative to sections */
+        .tester-section,
+        .table-section,
+        .faq-section,
+        .practices-section {
+            position: relative;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            .scroll-down {
+                bottom: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">T</div>
+                Trailblazers
+            </a>
+            <img src="vtu-logo.png" alt="VelTech Logo" id="vtu-logo">
+            <div class="nav-actions">
+                <a href="https://www.veltech.edu.in/" class="btn btn-secondary" target="_blank" rel="noopener">Vel Tech</a>
+                <a href="C:\Users\Naveen S\ai-password-analyzer\frontend\index_2.html" class="btn btn-primary">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>How strong is your password?</h1>
+            <p>Test your password strength and learn how to create a secure password that protects your digital life. Our password strength checker helps you understand vulnerabilities and guides you toward better security practices.</p>
+            <a href="C:\Users\Naveen S\ai-password-analyzer\frontend\index_2.html" class="btn btn-primary">Test Your Password</a>
+        </div>
+        <div class="hero-image">
+            <div class="hero-glow"></div>
+            <img src="lock.jpeg" alt="Cybersecurity Lock">
+        </div>
+        
+        <!-- Scroll Down Indicator -->
+        <div class="scroll-down" id="scrollDown" onclick="scrollToSection('tester')">
+            <span>Scroll</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- Password Tester Section -->
+    <section id="tester" class="tester-section">
+        <div class="tester-card">
+            <h2>Password Strength Testing Tool</h2>
+            <div class="password-input-wrapper">
+                <input 
+                    type="password" 
+                    id="passwordInput" 
+                    class="password-input" 
+                    placeholder="Enter a password to test..."
+                    autocomplete="off"
+                >
+                <button class="toggle-visibility" id="toggleBtn" onclick="togglePasswordVisibility()">🔒</button>
+            </div>
+            
+            <div class="results-grid">
+                <div class="result-item">
+                    <div class="result-label">Password Strength</div>
+                    <div class="result-value" id="strengthText">—</div>
+                    <div class="strength-indicator">
+                        <div class="strength-bar" id="strengthBar"></div>
+                    </div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Estimated Time to Crack</div>
+                    <div class="result-value" id="crackTime">—</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="section-scroll-indicator" data-next="strength-table">
+            <span>Next</span>
+            <div class="section-scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- Strength Table -->
+    <section id="strength-table" class="table-section">
+        <div class="strength-table">
+            <div class="table-header">
+                <h3>Password Strength Table</h3>
+                <a href="#" class="toggle-passphrases">
+                </a>
+            </div>
+
+            <div class="password-row">
+                <div class="password-bar-background bar-strong-bg"></div>
+                <div class="password-content">
+                    <div class="password-text">$*y^hiYRX2HgHzND</div>
+                    <div class="strength-info">
+                        <div class="strength-badge badge-strong">Strong</div>
+                        <div class="crack-time-label">Estimated time to crack</div>
+                        <div class="crack-time">Centuries</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="password-row">
+                <div class="password-bar-background bar-strong-bg"></div>
+                <div class="password-content">
+                    <div class="password-text">L@Szos72g6ww$&</div>
+                    <div class="strength-info">
+                        <div class="strength-badge badge-strong">Strong</div>
+                        <div class="crack-time-label">Estimated time to crack</div>
+                        <div class="crack-time">Centuries</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="password-row">
+                <div class="password-bar-background bar-good-bg"></div>
+                <div class="password-content">
+                    <div class="password-text">NWd3e%zqz6TG</div>
+                    <div class="strength-info">
+                        <div class="strength-badge badge-good">Good</div>
+                        <div class="crack-time-label">Estimated time to crack</div>
+                        <div class="crack-time">Months To Years</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="password-row">
+                <div class="password-bar-background bar-fair-bg"></div>
+                <div class="password-content">
+                    <div class="password-text">2jWLq!*gZA2</div>
+                    <div class="strength-info">
+                        <div class="strength-badge badge-fair">Fair</div>
+                        <div class="crack-time-label">Estimated time to crack</div>
+                        <div class="crack-time">Weeks To Months</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="password-row">
+                <div class="password-bar-background bar-weak-bg"></div>
+                <div class="password-content">
+                    <div class="password-text">*!WP5W5v3i</div>
+                    <div class="strength-info">
+                        <div class="strength-badge badge-weak">Weak</div>
+                        <div class="crack-time-label">Estimated time to crack</div>
+                        <div class="crack-time">Hours To Weeks</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="password-row">
+                <div class="password-bar-background bar-weak-bg"></div>
+                <div class="password-content">
+                    <div class="password-text">^Y66u&VK</div>
+                    <div class="strength-info">
+                        <div class="strength-badge badge-weak">Weak</div>
+                        <div class="crack-time-label">Estimated time to crack</div>
+                        <div class="crack-time">Hours To Weeks</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="password-row">
+                <div class="password-bar-background bar-very-weak-bg"></div>
+                <div class="password-content">
+                    <div class="password-text">Pt%sdr</div>
+                    <div class="strength-info">
+                        <div class="strength-badge badge-very-weak">Very Weak</div>
+                        <div class="crack-time-label">Estimated time to crack</div>
+                        <div class="crack-time">Seconds To Minutes</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="password-row">
+                <div class="password-bar-background bar-very-weak-bg"></div>
+                <div class="password-content">
+                    <div class="password-text">4fW</div>
+                    <div class="strength-info">
+                        <div class="strength-badge badge-very-weak">Very Weak</div>
+                        <div class="crack-time-label">Estimated time to crack</div>
+                        <div class="crack-time">Seconds To Minutes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="section-scroll-indicator" data-next="faq">
+            <span>Next</span>
+            <div class="section-scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-list">
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>Is it safe to type my real password here?</span>
+                    <span class="faq-icon">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        Your password never leaves your device. All calculations are performed locally in your browser using JavaScript. We never store, transmit, or see any password you type. The tool works entirely offline once the page loads, ensuring complete privacy and security.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>How do you calculate password strength?</span>
+                    <span class="faq-icon">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        We evaluate password strength based on multiple factors including length, character diversity (uppercase, lowercase, numbers, symbols), entropy, and patterns. We check against common passwords, dictionary words, and predictable patterns. The estimated crack time considers modern computing power and common attack methods.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>How do I create a strong password?</span>
+                    <span class="faq-icon">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        Strong passwords are long (14+ characters), random, and unique. Use a mix of uppercase and lowercase letters, numbers, and symbols. Avoid dictionary words, personal information, and common patterns. The best approach is using a password manager to generate and store complex, unique passwords for each account.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>What makes a password weak?</span>
+                    <span class="faq-icon">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        Weak passwords are short, use common words or patterns, contain personal information (names, birthdays), or are reused across multiple accounts. Simple substitutions like "P@ssw0rd" are easily cracked. Keyboard patterns like "qwerty" or "123456" are among the first attempts in any attack.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>Should I use a password manager?</span>
+                    <span class="faq-icon">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        Absolutely. Password managers are essential for modern security. They generate strong, unique passwords for every account, remember them securely, and autofill them when needed. This eliminates password reuse and weak passwords while making your online life more convenient. Bitwarden offers free and premium password management solutions.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="section-scroll-indicator" data-next="best-practices">
+            <span>Next</span>
+            <div class="section-scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- Best Practices Section -->
+    <section id="best-practices" class="practices-section">
+        <div class="practices-container">
+            <h2>Password Best Practices</h2>
+            <p class="practices-subtitle">Follow these guidelines to create and maintain secure passwords</p>
+            
+            <div class="practices-grid">
+                <div class="practice-card">
+                    <div class="practice-icon do">✓</div>
+                    <h3>Make it Long</h3>
+                    <p>Use at least 14 characters. Length is one of the most important factors in password strength.</p>
+                    <ul class="practice-list">
+                        <li>Aim for 16-20 characters when possible</li>
+                        <li>Longer passwords resist brute force attacks better</li>
+                        <li>Consider using passphrases</li>
+                    </ul>
+                </div>
+
+                <div class="practice-card">
+                    <div class="practice-icon do">✓</div>
+                    <h3>Make it Random</h3>
+                    <p>Avoid predictable patterns, dictionary words, or personal information that could be guessed.</p>
+                    <ul class="practice-list">
+                        <li>Use a password generator</li>
+                        <li>Mix uppercase, lowercase, numbers, symbols</li>
+                        <li>Avoid keyboard patterns</li>
+                    </ul>
+                </div>
+
+                <div class="practice-card">
+                    <div class="practice-icon do">✓</div>
+                    <h3>Make it Unique</h3>
+                    <p>Never reuse passwords across different accounts. Each account should have its own password.</p>
+                    <ul class="practice-list">
+                        <li>One compromised password won't affect others</li>
+                        <li>Reduces impact of data breaches</li>
+                        <li>Essential for account security</li>
+                    </ul>
+                </div>
+
+                <div class="practice-card">
+                    <div class="practice-icon do">✓</div>
+                    <h3>Use a Password Manager</h3>
+                    <p>Store passwords securely and access them easily across all your devices with a trusted password manager.</p>
+                    <ul class="practice-list">
+                        <li>Generate strong passwords automatically</li>
+                        <li>Encrypted secure storage</li>
+                        <li>Sync across all devices</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h4>Products</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Personal Password Manager</a></li>
+                        <li><a href="#">Business Password Manager</a></li>
+                        <li><a href="#">Enterprise Password Manager</a></li>
+                        <li><a href="#">Secrets Manager</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="#home">How strong is your password?</a></li>
+                        <li><a href="#strength-table">Password Strength Table</a></li>
+                        <li><a href="#faq">Frequently Asked Questions</a></li>
+                        <li><a href="#best-practices">Password Best Practices</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>About Us</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Naveen</a></li>
+                        <li><a href="#">Kishor</a></li>
+                        <li><a href="#">Ghanavi</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Security</a></li>
+                        <li><a href="#">Compliance</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 Trailblazers Inc. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="https://x.com/veltechofficial" class="social-link" aria-label="Twitter">𝕏</a>
+                    <a href="https://www.linkedin.com/school/vel-tech-technical-university/" class="social-link" aria-label="LinkedIn">in</a>
+                    <a href="#" class="social-link" aria-label="GitHub">⚙</a>
+                    <a href="#" class="social-link" aria-label="Facebook">f</a>
+                </div>
+                <select class="language-selector">
+                    <option>English</option>
+                    <option>Español</option>
+                    <option>Français</option>
+                    <option>Deutsch</option>
+                </select>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Hide scroll down arrow after scrolling
+        window.addEventListener('scroll', function() {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const scrollDown = document.getElementById('scrollDown');
+            
+            // Hide arrow after scrolling past hero section
+            if (winScroll > 100) {
+                scrollDown.classList.add('hidden');
+            } else {
+                scrollDown.classList.remove('hidden');
+            }
+        });
+
+        // Scroll to section function
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Show/hide section scroll indicators based on scroll position
+        function updateSectionIndicators() {
+            const indicators = document.querySelectorAll('.section-scroll-indicator');
+            const windowHeight = window.innerHeight;
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            indicators.forEach(indicator => {
+                const section = indicator.closest('section');
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.offsetHeight;
+                const sectionBottom = sectionTop + sectionHeight;
+
+                // Show indicator when in the middle/bottom part of the section
+                if (scrollTop + windowHeight > sectionTop + (sectionHeight * 0.5) && 
+                    scrollTop + windowHeight < sectionBottom + 100) {
+                    indicator.classList.add('visible');
+                } else {
+                    indicator.classList.remove('visible');
+                }
+            });
+        }
+
+        // Add click handlers to section indicators
+        document.querySelectorAll('.section-scroll-indicator').forEach(indicator => {
+            indicator.addEventListener('click', function() {
+                const nextSection = this.getAttribute('data-next');
+                scrollToSection(nextSection);
+            });
+        });
+
+        // Update section indicators on scroll
+        window.addEventListener('scroll', updateSectionIndicators);
+        // Initial check
+        updateSectionIndicators();
+
+        // Toggle password visibility
+        function togglePasswordVisibility() {
+            const input = document.getElementById('passwordInput');
+            const btn = document.getElementById('toggleBtn');
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🔓';
+            } else {
+                input.type = 'password';
+                btn.textContent = '🔒';
+            }
+        }
+
+        // Password strength calculator
+        function calculatePasswordStrength(password) {
+            if (!password) return { strength: '', score: 0, crackTime: '—' };
+
+            let score = 0;
+            let feedback = [];
+
+            // Length check
+            if (password.length >= 8) score += 1;
+            if (password.length >= 12) score += 1;
+            if (password.length >= 16) score += 1;
+            if (password.length >= 20) score += 1;
+
+            // Character diversity
+            if (/[a-z]/.test(password)) score += 1;
+            if (/[A-Z]/.test(password)) score += 1;
+            if (/[0-9]/.test(password)) score += 1;
+            if (/[^a-zA-Z0-9]/.test(password)) score += 1;
+
+            // Penalize common patterns
+            if (/(.)\1{2,}/.test(password)) score -= 1; // Repeating characters
+            if (/^[a-zA-Z]+$/.test(password)) score -= 1; // Only letters
+            if (/^[0-9]+$/.test(password)) score -= 2; // Only numbers
+            if (/password|123456|qwerty/i.test(password)) score -= 3; // Common passwords
+
+            // Determine strength
+            let strength, crackTime, barClass;
+            if (score <= 3) {
+                strength = 'Weak';
+                crackTime = 'Minutes to hours';
+                barClass = 'strength-weak';
+            } else if (score <= 5) {
+                strength = 'Fair';
+                crackTime = 'Hours to days';
+                barClass = 'strength-fair';
+            } else if (score <= 7) {
+                strength = 'Good';
+                crackTime = 'Weeks to months';
+                barClass = 'strength-good';
+            } else {
+                strength = 'Strong';
+                crackTime = 'Years to centuries';
+                barClass = 'strength-strong';
+            }
+
+            return { strength, score, crackTime, barClass };
+        }
+
+        // Real-time password analysis
+        document.getElementById('passwordInput').addEventListener('input', function(e) {
+            const password = e.target.value;
+            const result = calculatePasswordStrength(password);
+
+            document.getElementById('strengthText').textContent = result.strength || '—';
+            document.getElementById('crackTime').textContent = result.crackTime;
+
+            const strengthBar = document.getElementById('strengthBar');
+            strengthBar.className = 'strength-bar ' + (result.barClass || '');
+        });
+
+        // FAQ toggle
+        function toggleFAQ(element) {
+            const faqItem = element.parentElement;
+            const isActive = faqItem.classList.contains('active');
+            
+            // Close all FAQs
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Open clicked FAQ if it wasn't active
+            if (!isActive) {
+                faqItem.classList.add('active');
+            }
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
